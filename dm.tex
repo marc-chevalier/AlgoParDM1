@@ -1,0 +1,55 @@
+\input{latex-src/macros.tex}
+
+\author{
+    Marc \textsc{Chevalier}\\
+    Thomas \textsc{Pellissier Tanon}
+}
+\date{\today}
+\title{Distributing the Heat Equation}
+
+\begin{document}
+\maketitle
+
+\section{Heat equation}
+
+$$
+    \frac{\partial x}{\partial t}=\nabla^2 x
+$$
+
+\section{Cellular automata}
+
+\paragraph{Question 1.} There is $N^2$ cells in $\brackets{0,N-1}^2$. Therefore, $tN^2$ applications of the function $\delta$ are necessary to compute $X^t$ on $\brackets{0,N-1}^2$.
+
+\paragraph{Question 2.} 
+
+\paragraph{Question 3.} 
+
+\section{Average automata}
+
+Let $A=
+        \left(
+            \begin{matrix}
+                a_{1,1} & a_{1,2} & a_{1,3} \\ 
+                a_{2,1} & a_{2,2} & a_{2,3} \\ 
+                a_{3,1} & a_{3,2} & a_{3,3}
+            \end{matrix}
+        \right)$
+         and 
+    $B = 
+        \left(
+            \begin{matrix}
+                b_{1,1} & b_{1,2} & b_{1,3} \\ 
+                b_{2,1} & b_{2,2} & b_{2,3} \\ 
+                b_{3,1} & b_{3,2} & b_{3,3}
+            \end{matrix}
+        \right)$.
+
+$$
+    \begin{aligned}
+        \delta(A) + \lambda\delta(B) &= (1-p) a_{2,2} + p\frac{a_{2,1}+a_{1,2}+a_{3,2}+a_{2,3}}{4} + \lambda\left( (1-p) b_{2,2} + p\frac{b_{2,1}+b_{1,2}+b_{3,2}+b_{2,3}}{4} \right)\\
+        &= (1-p) (a_{2,2} + \lambda b_{2,2}) + p\frac{a_{2,1}+a_{1,2}+a_{3,2}+a_{2,3} + \lambda (b_{2,1}+b_{1,2}+b_{3,2}+b_{2,3})}{4}\\
+        &=\delta(A + \lambda B)
+    \end{aligned}
+$$
+
+\end{document}
