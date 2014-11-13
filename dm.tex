@@ -20,11 +20,23 @@ $$
 
 \paragraph{Question 1.} There is $N^2$ cells in $\brackets{0,N-1}^2$. Therefore, $tN^2$ applications of the function $\delta$ are necessary to compute $X^t$ on $\brackets{0,N-1}^2$.
 
-\paragraph{Question 2.} 
+\paragraph{Question 2.} We use a processor per cell. Each cell store its own state and the state of its 8 neighbours. Each cell compute its next state and send this information to its neighbours.
 
-\paragraph{Question 3.} 
+But, the diagonal neighbours are not linked directly. To communicate the new state to these cells, we resend each state we receive from below or above to the left and right neighbours. At the end of the communications, each cell has updated the states of its neighbours.
+
+\textcolor{blue}{Si tu n'es pas d'accord mineurement sens toi libre de rectifier la chose(même si c'est en vrac à coté, je m'en occuperai). Si c'est majeur... ben faudra voir.}
+
+\paragraph{Question 3.}
+
+\textcolor{blue}{Implem bloquante. Je l'analyserai dans le détail dès que possible.}
 
 \section{Average automata}
+
+\paragraph{Question 4.}
+
+In this case, we don't need the state of the diagonal cells. So, we have no need of the second step of communication.
+
+\paragraph{Question 5.}
 
 Let $A=
         \left(
@@ -51,5 +63,64 @@ $$
         &=\delta(A + \lambda B)
     \end{aligned}
 $$
+
+$$
+    \begin{aligned}
+        \delta\left(
+            \begin{matrix}
+                0 & 0 & 0 \\ 
+                0 & 0 & 0 \\ 
+                0 & 0 & 0
+            \end{matrix}
+        \right)
+        = 0
+    \end{aligned}
+$$
+
+Therefore $\delta \in \L\left( \M_3(\RR), \RR\right)$
+
+Consequently, $\delta^\dagger$ is a linear mapping, since it's just $N^2$ simultaneous application of $\delta$.
+
+More formally, let $(\G,\H,\lambda) \in \M_N(\RR)^2\times \RR$.
+
+$$
+    \begin{aligned}
+        \delta^\dagger(\G+\lambda\cdot\H) &= \left( \delta(v_{i,j}(\G+\lambda\cdot\H)) \right)_{i,j}\\
+        &= \left( \delta(v_{i,j}(\G)+\lambda v_{i,j}(\H)) \right)_{i,j}\\
+        &= \delta^\dagger(\G)+\lambda \delta^\dagger(\H)
+    \end{aligned}
+$$
+where $v_{i,j}(\G) \in \M_3(\RR)$ is the neighbours of the cell $(i,j)$ in $\G$. This function is clearly linear. Therefore $\delta^\dagger$ is linear.
+
+Let $\G$ an initial state and $t\in\NN^*$
+
+As $\delta^\dagger$ is linear, we can decompose $\G$ as a sum of $N^2$ matrices where all coefficient except one is equal to 0. 
+
+$$
+    \G=\sum\limits_{i=0}^{N-1}\sum\limits_{j=0}^{N-1} \G^{(i,j)}
+$$
+
+where $\left(\G^{(i,j)}\right)_{k,l}=\G_{i,j}E_{i,j}=\begin{cases} \G_{i,j} & \text{if }(i,j)=(k,l)\\0&\text{ else} \end{cases}$
+
+$$
+    \begin{aligned}
+        \delta^\dagger(\G) &= \sum\limits_{i=0}^{N-1}\sum\limits_{j=1}^{N-1} {\delta^\dagger}^{2t}\left(\G^{(i,j)}\right)\\
+        &= \sum\limits_{i=0}^{N-1} \sum\limits_{i=0}^{N-1} \G_{i,j} {\delta^\dagger}^{2t}(E_{i,j})
+    \end{aligned}
+$$
+
+Moreover, we just have to compute ${\delta^\dagger}^{2t}(E_{1,1})$ and we obtain all ${\delta^\dagger}^{2t}(E_{i,j})$ by toric translation. These transformation only depend on $N$ which is assumed to be constant. So, we just need ${\delta^\dagger}^{2t}(E_{1,1})$ in time $\log(t)$. Particularly, if we have ${\delta^\dagger}^{t}(E_{1,1})$, we can compute ${\delta^\dagger}^{2t}(E_{1,1})$ in time $\log(t)$ in constant time. We conclude that
+$$
+    T(2t) = T(t) + \cplx{1}
+$$
+where $T(t)$ is the computation time of ${\delta^\dagger}^t(E_{1,1})$. According with the master theorem
+$$
+    T(t)=\log(t)
+$$
+Finally, when we have ${\delta^\dagger}^{2t}(E_{1,1})$, we can compute ${\delta^\dagger}^{2t}(\G)$ in constant time.
+
+\textcolor{blue}{J'aimerais aussi analyser l'implem plutôt qu'un modèle mathématique légèrement abstrait}
+
+
 
 \end{document}
