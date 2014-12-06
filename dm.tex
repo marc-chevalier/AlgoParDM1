@@ -24,11 +24,13 @@ $$
 
 But, the diagonal neighbours are not linked directly. To communicate the new state to these cells, we resend each state we receive from below or above to the left and right neighbours. At the end of the communications, each cell has updated the states of its neighbours.
 
-\textcolor{blue}{Si tu n'es pas d'accord mineurement sens toi libre de rectifier la chose(même si c'est en vrac à coté, je m'en occuperai). Si c'est majeur... ben faudra voir.}
-
 \paragraph{Question 3.}
+There is $4N^2$ communication for each step and need a time $\cplx{1}$. 
 
-\textcolor{blue}{Implem bloquante. Je l'analyserai dans le détail dès que possible.}
+On a non-toric grid, we need to communicate the state of the cells on the edges to the other side. We need $(N-2)N$ additional communications and a total time of $\cplx{N}$.
+
+On a ring, we need a time $\cplx{N^2}$ and $\cplx{N^2}$ communications.
+
 
 \section{Average automata}
 
@@ -91,7 +93,7 @@ where $\left(\G^{(i,j)}\right)_{k,l}=\G_{i,j}E_{i,j}=\begin{cases} \G_{i,j} & \t
 
 $$
     \begin{aligned}
-        \delta^\dagger(\G) &= \sum\limits_{i=0}^{N-1}\sum\limits_{j=1}^{N-1} {\delta^\dagger}^{2t}\left(\G^{(i,j)}\right)\\
+        {\delta^\dagger}^{2t}(\G) &= \sum\limits_{i=0}^{N-1}\sum\limits_{j=1}^{N-1} {\delta^\dagger}^{2t}\left(\G^{(i,j)}\right)\\
         &= \sum\limits_{i=0}^{N-1} \sum\limits_{i=0}^{N-1} \G_{i,j} {\delta^\dagger}^{2t}(E_{i,j})
     \end{aligned}
 $$
@@ -100,14 +102,101 @@ Moreover, we just have to compute ${\delta^\dagger}^{2t}(E_{1,1})$ and we obtain
 $$
     T(2t) = T(t) + \cplx{1}
 $$
-where $T(t)$ is the computation time of ${\delta^\dagger}^t(E_{1,1})$. According with the master theorem
+where $T(t)$ is the computation time of ${\delta^\dagger}^t(E_{1,1})$. If we want to compute the $2t+1^{\text{th}}$ generation, we just compute a iteration as previously and we use linearity to compute the $2t^{\text{th}}$ generation.
+
+According with the master theorem
 $$
     T(t)=\log(t)
 $$
 Finally, when we have ${\delta^\dagger}^{2t}(E_{1,1})$, we can compute ${\delta^\dagger}^{2t}(\G)$ in constant time.
 
-\textcolor{blue}{J'aimerais aussi analyser l'implem plutôt qu'un modèle mathématique légèrement abstrait}
+If we do not consider $N$ as a constant, we have
+$$
+    T(2t) = T(t) + \cplx{N^2}
+$$
+So, we conclude
+$$
+    T(t)=N^2\log(t)
+$$
+While the complexity in the general case is
+$$
+    T(t)=N^2\cdot t
+$$
 
+\paragraph{Question 6.}
+
+In this algorithm, each processor keep the value of its cells. Each value is communicated to the other by broadcast. We do $N^2$ broadcast each time we double the rank of computed generation ie. $N^4$ communications.
+
+So, we have $\cplx{N^4\log(t)}$ communications.
+
+\paragraph{Question 7.}
+
+We use the sums and translations explained at the question 5. Each cell need the state of all other cells to update its state, we need $N^4$ communications. The computation space is always $\cplx{N^2}$ and the time is $\cplx{\left \lvert X^0\right \rvert N^2}$
+
+\paragraph{Question 9.}
+
+For all $c\in\RR$,
+$$
+    \begin{aligned}
+        U^b_c : \brackets{0,N-1}^d &\to \RR\\
+        x &\mapsto c
+    \end{aligned}
+$$
+and
+$$
+    \begin{aligned}
+        V_c : \ZZ^d &\to \RR\\
+        x &\mapsto c
+    \end{aligned}
+$$
+are fixed points of $\delta^\dagger$ since the weighted mean of 5 values equal to $c$ is $c$.
+
+\section{Thermal reservoirs}
+
+\paragraph{Question 10.}
+
+With one constant $C_k$, the function $U_k$ is a fixed point.
+
+With two constant, on a grid of size 2
+
+\begin{tabular}{|c|c|}
+\hline
+$C_k$ & $\frac{k+l}{2}$\\
+\hline
+$\frac{k+l}{2}$ & $C_l$\\
+\hline
+\end{tabular}
+
+is a fixed point. Indeed 
+$$
+    (1-p)\frac{k+l}{2} + p\frac{2k+2l}{4}=(1-p)\frac{k+l}{2} + p\frac{k+l}{2} = \frac{k+l}{2}
+$$
+
+When there is a constant $C_k$, the limit of $(X^t)$ is $U_k$. Indeed, as we work on a compact space, there is a minimum. If this minimum is different to $k$, there is a cell which has at least a neighbour greater and the other have the same value. Then, at the next generation, the value of this cell increase. Then this configuration were not a fixed point.
+
+When there is no constant, the limit of $(X^t)$ is $U_{\frac{1}{N^2}\sum\limits_{i=0}^{N-1} \sum\limits_{j=0}^{N-1} X_{i,j}}$. To do this proof, we use the previous prove and the conservation of the sum of the values.
+
+\paragraph{Question 11.}
+
+$\delta^\dagger$ is no more linear when we work with a grid with constants. For instance, it is obvious if each cell is a constant, there is no evolution.
+
+\paragraph{Question 12.}
+
+\begin{lemma}
+    For all grid $X$, there is a unique fixed point $l_X$ with the same constants.
+\end{lemma}
+\begin{proof}
+    This is the difficult part. We can probably use the continuity of the uniform norm between a generation and the next one.
+\end{proof}
+
+\begin{lemma}
+    For all grid $X^0$, $(X^t) \to l_{X^0}$.
+\end{lemma}
+\begin{proof}
+    We just need to prove that $(X^t-l_{X^0}) \to 0$. Indeed, there are only constant $C_0$.
+    
+    We can easily show that $\Vert (X^t-l_{X^0}) \Vert_\infty \to 0$.
+\end{proof}
 
 
 \end{document}
