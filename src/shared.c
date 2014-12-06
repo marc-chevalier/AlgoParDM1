@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <stdbool.h>
+#include <string.h>
+#include "gfx.c"
 
 /* Quelques structures utiles */
 typedef struct coordinates {
@@ -56,4 +58,14 @@ double move_double(int from, int to, double val) {
     MPI_Recv(&val, 1, MPI_DOUBLE, from, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     
     return val;
+}
+
+bool with_gui(int argc, char* argv[]) {
+    for(int i = 0; i < argc; i++) {
+        if(strcmp("-g", argv[i]) == 0) {
+            return true;
+        }
+    }
+    
+    return false;
 }

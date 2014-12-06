@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <mpi.h>
+#include <math.h>
 #include <stdbool.h>
 #include "shared.c"
 
@@ -63,6 +64,40 @@ typedef struct environment {
 } environment;
 
 
+#define GUI_SCALE_FACTOR 30
+void gui_set_color_from_value(double value) {
+    int color = (int) (255 * sqrt(value));
+    gfx_color(color, color, color);
+}
+
+void gui_draw_matrix(matrix matrix) {
+    coordinates coord;
+    
+    gfx_clear();
+    for(coord.x = 0; coord.x < matrix.size.x; coord.x++) {
+        for(coord.y = 0; coord.y < matrix.size.y; coord.y++) {
+            gui_set_color_from_value(matrix.data[matrix.size.y * coord.x + coord.y].value);
+            for(int k = 0; k < GUI_SCALE_FACTOR; k++) {
+                gfx_line(coord.x * GUI_SCALE_FACTOR, coord.y * GUI_SCALE_FACTOR + k, (coord.x + 1) * GUI_SCALE_FACTOR, coord.y * GUI_SCALE_FACTOR + k);
+            }
+        }
+    }
+    gfx_flush();
+}
+
+void gui_open(environment environment) {
+    coordinates window_size = coordinates_init(environment.matrix.size.x * GUI_SCALE_FACTOR, environment.matrix.size.y * GUI_SCALE_FACTOR);
+    
+    gfx_open(window_size.x, window_size.y, "constants");
+    
+    gui_draw_matrix(environment.matrix);
+
+    while(gfx_wait() != '\0')
+    {}
+
+    gfx_close();
+}
+
 /* Input parsing */
 environment parse_file_header() {
     environment data;
@@ -99,7 +134,6 @@ coordinates parse_entry_until_request(environment* environment, bool update_matr
 
     return coordinates_init(-1, -1);
 }
-
 
 /* Main code */
 int main(int argc, char* argv[])
@@ -180,6 +214,10 @@ int main(int argc, char* argv[])
     }
 
     if(my_id == 0) {
+        if(with_gui(argc, argv)) {
+            gui_open(environment);
+        }
+
         coordinates end_target = coordinates_init(-1, -1);
         while(!coordinates_equals(target, end_target)) {
             printf("Value of case (%d, %d) is %lf.\n", target.x, target.y, matrix_get_case(environment.matrix, target).value);
