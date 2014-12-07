@@ -38,6 +38,8 @@ On a ring, we need a time $\cplx{N^2}$ and $\cplx{N^2}$ communications.
 
 In this case, we don't need the state of the diagonal cells. So, we have no need of the second step of communication.
 
+To be closer to the abstract algorithm we assume we have one MPI process per cell.
+
 \paragraph{Question 5.}
 
 Let $A=
@@ -133,6 +135,10 @@ So, we have $\cplx{N^4\log(t)}$ communications.
 
 We use the sums and translations explained at the question 5. Each cell need the state of all other cells to update its state, we need $N^4$ communications. The computation space is always $\cplx{N^2}$ and the time is $\cplx{\left \lvert X^0\right \rvert N^2}$
 
+\paragraph{Question 8.}
+
+Instead of reusing question 4 to compute $Z^t$ we have used the algorithm described in question 6. Again we assume we have one processor per cell.
+
 \paragraph{Question 9.}
 
 For all $c\in\RR$,
@@ -198,5 +204,9 @@ $\delta^\dagger$ is no more linear when we work with a grid with constants. For 
     We can easily show that $\Vert (X^t-l_{X^0}) \Vert_\infty \to 0$.
 \end{proof}
 
+
+\paragraph{Question 14.}
+
+The graphic interface is available for both \texttt{sparce} and \texttt{constants} binaries using the \texttt{-g} option.
 
 \end{document}
