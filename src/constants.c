@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include "shared.c"
+#include "gfx.c"
 
 /*devil
  #define while if1

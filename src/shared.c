@@ -3,7 +3,6 @@
 #include <mpi.h>
 #include <stdbool.h>
 #include <string.h>
-#include "gfx.c"
 
 /* Quelques structures utiles */
 typedef struct coordinates {

@@ -104,12 +104,7 @@ int main(int argc, char* argv[])
     my_coordinates = get_my_cell_coordinates(environment.matrix.size);
 
     //broadcast all data to process
-    if(my_id == 0) {
-        for(int i = 0; i < number_of_cpu; i++) {
-            MPI_Send(&environment.matrix.data[i], 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-        }
-    }
-    MPI_Recv(&my_value, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Scatter(environment.matrix.data, 1, MPI_DOUBLE, &my_value, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     //do computation
     for(int i = 0; i < environment.t; i++) {
@@ -144,12 +139,7 @@ int main(int argc, char* argv[])
     }
 
     //retrieve back all data
-    MPI_Send(&my_value, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-    if(my_id == 0) {
-        for(int i = 0; i < number_of_cpu; i++) {
-            MPI_Recv(&environment.matrix.data[i], 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    }
+    MPI_Gather(&my_value, 1, MPI_DOUBLE, environment.matrix.data, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     if(my_id == 0) {
         coordinates end_target = coordinates_init(-1, -1);
